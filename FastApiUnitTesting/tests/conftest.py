@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from ..database import get_db
+from database import get_db
 from models import Base
 from sqlalchemy.pool import StaticPool
 
@@ -42,7 +42,7 @@ def app() -> Generator[FastAPI, Any, None]:
 
 
 @pytest.fixture(scope="function")
-def db_session(app: FastAPI) -> Generator[SessionTesting, Any, None]:
+def db_session(app: FastAPI) -> Generator[TestingSessionLocal, Any, None]:
     connection = engine.connect()
     transaction = connection.begin()
     session = TestingSessionLocal(bind=connection)
@@ -54,7 +54,7 @@ def db_session(app: FastAPI) -> Generator[SessionTesting, Any, None]:
 
 @pytest.fixture(scope="function")
 def client(
-    app: FastAPI, db_session: SessionTesting
+    app: FastAPI, db_session: TestingSessionLocal
 ) -> Generator[TestClient, Any, None]:
     """
     Create a new FastAPI TestClient that uses the `db_session` fixture to override
